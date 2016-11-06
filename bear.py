@@ -1,5 +1,18 @@
 import os.path
 import sqlite3
+import datetime
+
+
+def timestamp_to_datetime(s):
+    """
+    Convert a Core Data timestamp to a datetime. They're all a float of seconds since 1 Jan 2001. We calculate
+    the seconds in offset.
+    """
+    if not s:
+        return None
+
+    OFFSET = (datetime.datetime(2001, 1, 1, 0, 0, 0) - datetime.datetime.fromtimestamp(0)).total_seconds()
+    return datetime.datetime.fromtimestamp(s + OFFSET)
 
 
 class Tag(object):
@@ -34,10 +47,10 @@ class Note(object):
         self._bear = bear
         self.int_id = int_id
         self.id = id
-        self.created = created
-        self.modified = modified
-        self.archived = archived
-        self.trashed = trashed
+        self.created = timestamp_to_datetime(created)
+        self.modified = timestamp_to_datetime(modified)
+        self.archived = timestamp_to_datetime(archived)
+        self.trashed = timestamp_to_datetime(trashed)
         self.deleted = deleted
         self.pinned = pinned
         self.title = title

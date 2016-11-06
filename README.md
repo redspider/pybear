@@ -21,7 +21,21 @@ IMPORTANT NOTE:
 Tags are CASE SENSITIVE. When you go getting tag_by_title you're gonna confuse yourself if you look for the wrong case.
 I could search case-insensitive but I figure that might lead to even more confusion.
 
-How to use:
+## How to use bear_to_jekyll
+
+This is a tiny script that exports notes as (roughly) jekyll posts. you'll probably need to modify it to your needs.
+
+This command will export ALL your notes to the given directory. Not really ideal unless it's a protected website. It
+generates some simple front matter, including the title and tags.
+
+    python bear_to_jekyll.py my/jekyll/posts/dir
+
+This command will export anything in either of the tags "public" or "posts"
+
+    python bear_to_jekyll.py --tag public --tag posts my/jekyll/posts/dir
+
+
+## How to use the library:
 
 ### Get the titles of all your notes
 

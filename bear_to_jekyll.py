@@ -60,6 +60,6 @@ title: {}
 date: {}
 tags: {}
 ---
-{}""".format(note.title, note.created, ' '.join([t.title for t in note.tags()]), note.text))
+{}""".format(note.title, note.created.strftime('%Y-%m-%d %H:%M:%S +0000'), ' '.join([t.title for t in note.tags()]), note.text))
 
 
