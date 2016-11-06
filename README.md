@@ -24,6 +24,11 @@ IMPORTANT NOTE:
 Tags are CASE SENSITIVE. When you go getting tag_by_title you're gonna confuse yourself if you look for the wrong case.
 I could search case-insensitive but I figure that might lead to even more confusion.
 
+## Installation
+
+It probably needs python 3, I haven't tried anything else. The `requirements.txt` file has all the requirements, but
+at the time of writing the only one is the Markdown package and that's only necessary for `bear_to_html`.
+
 ## How to use bear_to_jekyll
 
 This is a tiny script that exports notes as (roughly) jekyll posts. you'll probably need to modify it to your needs.
@@ -33,10 +38,21 @@ generates some simple front matter, including the title and tags.
 
     python bear_to_jekyll.py my/jekyll/posts/dir
 
-This command will export anything in either of the tags "public" or "posts"
+This command will export anything in either of the tags "public" or "posts".
 
     python bear_to_jekyll.py --tag public --tag posts my/jekyll/posts/dir
 
+In both cases relevant images (only) will be exported as well, in directories that look like big UUIDs - this is how
+Bear represents them so I don't mess with that.
+
+## How to use bear_to_html
+
+Similar to the above, except this one will do some trivial markdown processing and try and give you HTML that mostly
+works. It's not great - Bear uses some custom stuff for things like todo lists which don't come across well, and
+handles things like header spacing much better than almost-vanilla python Markdown module does. It's readable though.
+
+You can export this into a Dropbox dir for read-only access for example. Same arguments as bear_to_jekyll to export
+just a subset of your notes.
 
 ## How to use the library:
 

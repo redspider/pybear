@@ -17,7 +17,7 @@ def title_to_filename(path, title):
     """
 
     name = re.sub(r'[^a-z0-9]','_',title.lower())
-    return os.path.join(path, name + '.md')
+    return os.path.join(path, name)
 
 
 if __name__ == "__main__":
@@ -25,6 +25,7 @@ if __name__ == "__main__":
     parser.add_argument('output', type = str,
                         help = 'directory to output to')
     parser.add_argument('--tag', type = str, action='append', help='Tag to export, you can specify multiple times. If no tags are specified all posts will be exported')
+    parser.add_argument('--html', action = "store_true", help = "render as html")
     args = parser.parse_args()
 
     full_path = os.path.join(os.getcwd(), args.output)
@@ -53,24 +54,26 @@ if __name__ == "__main__":
     # Iterate through all notes
     for note in notes:
         # Create a suitable filename
-        filename = title_to_filename(full_path, note.title)
+        filename = title_to_filename(full_path, note.title) + '.md'
 
         # Write out the post
         with open(filename, 'w', encoding = 'utf8') as f:
+
             f.write("""---
-title: {}
-date: {}
-tags: {}
-uuid: {}
----
-{}""".format(note.title, note.created.strftime('%Y-%m-%d %H:%M:%S +0000'), ' '.join([t.title for t in note.tags()]), note.id, note.text))
+    title: {}
+    date: {}
+    tags: {}
+    uuid: {}
+    ---
+    {}""".format(note.title, note.created.strftime('%Y-%m-%d %H:%M:%S +0000'), ' '.join([t.title for t in note.tags()]), note.id, note.text))
+
             # Images to copy
             for image in note.images():
                 if image.exists():
                     # Figure out target path for image
                     target_path = os.path.join(full_path, image.uri)
                     # Make dir
-                    os.makedirs(os.path.dirname(target_path))
+                    os.makedirs(os.path.dirname(target_path), exist_ok = True)
                     # Copy file
                     shutil.copyfile(image.path, target_path)
 
