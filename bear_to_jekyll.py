@@ -4,6 +4,8 @@ I really wanted to call this "inthewoods.py" but it seemed likely to cause confu
 import argparse
 import os.path, os
 import re
+import shutil
+
 import bear
 import sys
 
@@ -59,7 +61,17 @@ if __name__ == "__main__":
 title: {}
 date: {}
 tags: {}
+uuid: {}
 ---
-{}""".format(note.title, note.created.strftime('%Y-%m-%d %H:%M:%S +0000'), ' '.join([t.title for t in note.tags()]), note.text))
+{}""".format(note.title, note.created.strftime('%Y-%m-%d %H:%M:%S +0000'), ' '.join([t.title for t in note.tags()]), note.id, note.text))
+            # Images to copy
+            for image in note.images():
+                if image.exists():
+                    # Figure out target path for image
+                    target_path = os.path.join(full_path, image.uri)
+                    # Make dir
+                    os.makedirs(os.path.dirname(target_path))
+                    # Copy file
+                    shutil.copyfile(image.path, target_path)
 
 

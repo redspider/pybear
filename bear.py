@@ -1,4 +1,5 @@
 import os.path
+import re
 import sqlite3
 import datetime
 
@@ -13,6 +14,17 @@ def timestamp_to_datetime(s):
 
     OFFSET = (datetime.datetime(2001, 1, 1, 0, 0, 0) - datetime.datetime.fromtimestamp(0)).total_seconds()
     return datetime.datetime.fromtimestamp(s + OFFSET)
+
+
+class Image(object):
+    def __init__(self, path, uri):
+        self.uri = uri
+        self.path = os.path.join(path, uri)
+
+    def exists(self):
+        # The only reason I know of for this to fail is for the welcome.png that is in the default note, which is not
+        # stored in local images, but it could happen part way through a sync so make sure you check.
+        return os.path.exists(self.path)
 
 
 class Tag(object):
@@ -63,6 +75,10 @@ class Note(object):
 
         for tag in cursor.fetchall():
             yield self._bear._row_to_tag(tag)
+
+    def images(self):
+        for uri in re.findall(r'\[image:([^\]]+)\]', self.text):
+            yield Image(os.path.join(os.path.dirname(self._bear._path),"Local Files/Note Images"), uri)
 
     def __str__(self):
         return "({}) {} ({} chars)".format(self.id, self.title, len(self.text))
