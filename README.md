@@ -14,6 +14,9 @@ you entered it somewhere else.
 
 3. If the database path moves we might have to go play hide & seek again.
 
+4. Plausibly doing this could destroy everything you love, or at least your notes. I haven't noticed a problem but
+backup regularly.
+
 All that said and with all the disclaimer in the world, it works ok for me.
 
 IMPORTANT NOTE:
