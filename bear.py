@@ -35,13 +35,13 @@ class Tag(object):
     
     def notes(self):
         cursor = self._bear._db.cursor()
-        cursor.execute("SELECT * FROM ZSFNOTE JOIN Z_5TAGS ON ZSFNOTE.Z_PK = Z_5TAGS.Z_5NOTES AND Z_5TAGS.Z_10TAGS=?", [self.id])
+        cursor.execute("SELECT * FROM ZSFNOTE JOIN Z_7TAGS ON ZSFNOTE.Z_PK = Z_7TAGS.Z_7NOTES AND Z_7TAGS.Z_14TAGS=?", [self.id])
 
         for note in cursor.fetchall():
             yield self._bear._row_to_note(note)
 
     def __str__(self):
-        return "({}) {}".format(self.id, self.title)
+        return "({}) -> {}".format(self.id, self.title)
 
 
 class Note(object):
@@ -70,7 +70,7 @@ class Note(object):
 
     def tags(self):
         cursor = self._bear._db.cursor()
-        cursor.execute("SELECT * FROM ZSFNOTETAG JOIN Z_5TAGS ON Z_5TAGS.Z_5NOTES = ? AND Z_5TAGS.Z_10TAGS=ZSFNOTETAG.Z_PK",
+        cursor.execute("SELECT * FROM ZSFNOTETAG JOIN Z_7TAGS ON Z_7TAGS.Z_7NOTES = ? AND Z_7TAGS.Z_14TAGS=ZSFNOTETAG.Z_PK",
                        [self.int_id])
 
         for tag in cursor.fetchall():
