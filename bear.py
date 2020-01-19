@@ -33,12 +33,40 @@ class Tag(object):
         self.id = id
         self.title = title
     
-    def notes(self):
+    def notes(self, include_trashed = False, exact_match = False):
+        """Return all notes with this tag.
+
+        If exact_match is True, then ignore notes which have more specific tags.
+        E.g. if tag is '#gtd/errands', then notes with more specific tags, such
+        as '#gtd/errands/bycar' will not be returned.
+        """
         cursor = self._bear._db.cursor()
         cursor.execute("SELECT * FROM ZSFNOTE JOIN Z_7TAGS ON ZSFNOTE.Z_PK = Z_7TAGS.Z_7NOTES AND Z_7TAGS.Z_14TAGS=?", [self.id])
 
         for note in cursor.fetchall():
-            yield self._bear._row_to_note(note)
+            n = self._bear._row_to_note(note)
+            if exact_match:
+                def note_has_more_specific_tag (note):
+                    for t in n.tags():
+                        # Does the note have a tag that is more specific?
+                        if t.title.startswith(self.title) and \
+                           len (t.title) > len (self.title):
+                            return True
+                    else:
+                        return False
+                if note_has_more_specific_tag (n):
+                    continue
+            if not include_trashed and n.deleted:
+                # FIXME: Recent versions of Bear (e.g. v1.7.7) apparently use a
+                # different flag to indicate notes which have been moved to
+                # "Trash". While it is tempting to check if the note has a
+                # 'trashed' attribute, which indeed a note gets upon moving to
+                # Trash, this creates problems, because apparently notes which
+                # got recovered from Trash retain their 'trashed' attribute.
+                # This means we should not discriminate notes based on that
+                # field, as we will be skiping valid (resotred) notes... :/
+                continue
+            yield n
 
     def __str__(self):
         return "({}) -> {}".format(self.id, self.title)
