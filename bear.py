@@ -104,6 +104,29 @@ class Note(object):
         for tag in cursor.fetchall():
             yield self._bear._row_to_tag(tag)
 
+    def specific_tags (self):
+        """
+        Return list of *specific* tags for the note
+
+        "Specific" means that if a note defines a tag, say
+        `#projects/work/notebooks`, then any higher-level tags, such as
+        `#projects` or `#projects/work` will _not_ be returned. This is in
+        contrast to the default behaviour of pybear.Note.tags() which would
+        return all these higher-order tags.
+        """
+
+        all_tags = sorted (self.tags(), \
+                            key=lambda t: len(t.title))
+        specific_tags = []
+        for tag in all_tags:
+            if tag.title in [ t.title[:len(tag.title)] \
+                            for t in all_tags \
+                            if len(t.title) > len (tag.title) ]:
+                continue
+            else:
+                specific_tags.append (tag)
+        return specific_tags
+
     def images(self):
         for uri in re.findall(r'\[image:([^\]]+)\]', self.text):
             yield Image(os.path.join(os.path.dirname(self._bear._path),"Local Files/Note Images"), uri)
