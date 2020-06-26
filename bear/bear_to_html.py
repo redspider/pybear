@@ -55,7 +55,7 @@ def get_css():
     return '<!-- Could not find style file, see get_css() in bear_to_html.py -->'
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description = 'Export Bear posts as Jekyll-compatible markdown')
     parser.add_argument('output', type = str,
                         help = 'directory to output to')
@@ -125,4 +125,5 @@ if __name__ == "__main__":
                     # Copy file
                     shutil.copyfile(image.path, target_path)
 
-
+if __name__ == "__main__":
+    main()
