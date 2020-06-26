@@ -36,11 +36,11 @@ This is a tiny script that exports notes as (roughly) jekyll posts. you'll proba
 This command will export ALL your notes to the given directory. Not really ideal unless it's a protected website. It
 generates some simple front matter, including the title and tags.
 
-    python bear_to_jekyll.py my/jekyll/posts/dir
+    python -m bear.bear_to_jekyll my/jekyll/posts/dir
 
 This command will export anything in either of the tags "public" or "posts".
 
-    python bear_to_jekyll.py --tag public --tag posts my/jekyll/posts/dir
+    python -m bear.bear_to_jekyll --tag public --tag posts my/jekyll/posts/dir
 
 In both cases relevant images (only) will be exported as well, in directories that look like big UUIDs - this is how
 Bear represents them so I don't mess with that.
