@@ -20,7 +20,7 @@ def title_to_filename(path, title):
     return os.path.join(path, name)
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(description = 'Export Bear posts as Jekyll-compatible markdown')
     parser.add_argument('output', type = str,
                         help = 'directory to output to')
@@ -78,3 +78,5 @@ if __name__ == "__main__":
                     shutil.copyfile(image.path, target_path)
 
 
+if __name__ == "__main__":
+    main()
