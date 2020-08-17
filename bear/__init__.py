@@ -6,14 +6,15 @@ import datetime
 __version__ = '0.0.20200629'
 
 def timestamp_to_datetime(s):
-    """
-    Convert a Core Data timestamp to a datetime. They're all a float of seconds since 1 Jan 2001. We calculate
-    the seconds in offset.
-    """
+    '''
+    Convert a Core Data timestamp to a datetime. They're all a float of seconds
+    since 1 Jan 2001. We calculate the seconds in offset.
+    '''
     if not s:
         return None
 
-    OFFSET = (datetime.datetime(2001, 1, 1, 0, 0, 0) - datetime.datetime.fromtimestamp(0)).total_seconds()
+    OFFSET = (datetime.datetime(2001, 1, 1, 0, 0, 0)
+        - datetime.datetime.fromtimestamp(0)).total_seconds()
     return datetime.datetime.fromtimestamp(s + OFFSET)
 
 
@@ -23,8 +24,9 @@ class Image(object):
         self.path = os.path.join(path, uri)
 
     def exists(self):
-        # The only reason I know of for this to fail is for the welcome.png that is in the default note, which is not
-        # stored in local images, but it could happen part way through a sync so make sure you check.
+        # The only reason I know of for this to fail is for the welcome.png that
+        # is in the default note, which is not stored in local images, but it
+        # could happen part way through a sync so make sure you check.
         return os.path.exists(self.path)
 
 
@@ -33,7 +35,7 @@ class Tag(object):
         self._bear = bear
         self.id = id
         self.title = title
-    
+
     def notes(self, include_trashed = False, exact_match = False):
         """Return all notes with this tag.
 
@@ -42,7 +44,11 @@ class Tag(object):
         as '#gtd/errands/bycar' will not be returned.
         """
         cursor = self._bear._db.cursor()
-        cursor.execute("SELECT * FROM ZSFNOTE JOIN Z_7TAGS ON ZSFNOTE.Z_PK = Z_7TAGS.Z_7NOTES AND Z_7TAGS.Z_14TAGS=?", [self.id])
+        cursor.execute('''
+            SELECT * FROM ZSFNOTE
+            JOIN Z_7TAGS ON
+                ZSFNOTE.Z_PK = Z_7TAGS.Z_7NOTES AND Z_7TAGS.Z_14TAGS=?
+        ''', [self.id])
 
         for note in cursor.fetchall():
             n = self._bear._row_to_note(note)
@@ -84,7 +90,8 @@ class Note(object):
     title = None
     text = None
 
-    def __init__(self, bear, int_id, id, created, modified, archived, trashed, deleted, pinned, title, text):
+    def __init__(self, bear, int_id, id, created, modified, archived, trashed,
+            deleted, pinned, title, text):
         self._bear = bear
         self.int_id = int_id
         self.id = id
@@ -99,13 +106,16 @@ class Note(object):
 
     def tags(self):
         cursor = self._bear._db.cursor()
-        cursor.execute("SELECT * FROM ZSFNOTETAG JOIN Z_7TAGS ON Z_7TAGS.Z_7NOTES = ? AND Z_7TAGS.Z_14TAGS=ZSFNOTETAG.Z_PK",
-                       [self.int_id])
+        cursor.execute('''
+            SELECT * FROM ZSFNOTETAG
+            JOIN Z_7TAGS ON
+                Z_7TAGS.Z_7NOTES = ? AND Z_7TAGS.Z_14TAGS = ZSFNOTETAG.Z_PK
+        ''', [self.int_id])
 
         for tag in cursor.fetchall():
             yield self._bear._row_to_tag(tag)
 
-    def specific_tags (self):
+    def specific_tags(self):
         """
         Return list of *specific* tags for the note
 
@@ -130,7 +140,10 @@ class Note(object):
 
     def images(self):
         for uri in re.findall(r'\[image:([^\]]+)\]', self.text):
-            yield Image(os.path.join(os.path.dirname(self._bear._path),"Local Files/Note Images"), uri)
+            yield Image(
+                os.path.join(os.path.dirname(self._bear._path),
+                    "Local Files/Note Images"),
+                uri)
 
     def __str__(self):
         return "({}) {} ({} chars)".format(self.id, self.title, len(self.text))
@@ -141,8 +154,9 @@ class Bear(object):
         if path:
             self._path = path
         else:
-            self._path = os.path.expanduser('~//Library/Containers/net.shinyfrog.bear/Data/Library/Application '
-                                      'Support/net.shinyfrog.bear/database.sqlite')
+            self._path = os.path.expanduser(
+                '~//Library/Containers/net.shinyfrog.bear/Data/Library'
+                '/Application Support/net.shinyfrog.bear/database.sqlite')
         self.connect()
 
     def connect(self):
@@ -150,21 +164,47 @@ class Bear(object):
         self._db.row_factory = sqlite3.Row
 
     def notes(self):
-        """
-        CREATE TABLE ZSFNOTE ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZARCHIVED INTEGER, ZENCRYPTED
-        INTEGER, ZHASSOURCECODE INTEGER, ZLOCKED INTEGER, ZORDER INTEGER, ZPERMANENTLYDELETED INTEGER,
-        ZPINNED INTEGER, ZSHOWNINTODAYWIDGET INTEGER, ZSKIPSYNC INTEGER, ZTODOCOMPLETED INTEGER, ZTODOINCOMPLETED
-        INTEGER, ZTRASHED INTEGER, ZFOLDER INTEGER, ZARCHIVEDDATE TIMESTAMP, ZCREATIONDATE TIMESTAMP, ZLOCKEDDATE
-        TIMESTAMP, ZMODIFICATIONDATE TIMESTAMP, ZORDERDATE TIMESTAMP, ZPINNEDDATE TIMESTAMP, ZTRASHEDDATE TIMESTAMP,
-        ZLASTEDITINGDEVICE VARCHAR, ZTEXT VARCHAR, ZTITLE VARCHAR, ZUNIQUEIDENTIFIER VARCHAR, ZVECTORCLOCK BLOB );
-        """
+        '''
+        .. code-block:: sql
+
+            CREATE TABLE ZSFNOTE (
+                Z_PK                INTEGER PRIMARY KEY,
+                Z_ENT               INTEGER,
+                Z_OPT               INTEGER,
+                ZARCHIVED           INTEGER,
+                ZENCRYPTED          INTEGER,
+                ZHASSOURCECODE      INTEGER,
+                ZLOCKED             INTEGER,
+                ZORDER              INTEGER,
+                ZPERMANENTLYDELETED INTEGER,
+                ZPINNED             INTEGER,
+                ZSHOWNINTODAYWIDGET INTEGER,
+                ZSKIPSYNC           INTEGER,
+                ZTODOCOMPLETED      INTEGER,
+                ZTODOINCOMPLETED    INTEGER,
+                ZTRASHED            INTEGER,
+                ZFOLDER             INTEGER,
+                ZARCHIVEDDATE       TIMESTAMP,
+                ZCREATIONDATE       TIMESTAMP,
+                ZLOCKEDDATE         TIMESTAMP,
+                ZMODIFICATIONDATE   TIMESTAMP,
+                ZORDERDATE          TIMESTAMP,
+                ZPINNEDDATE         TIMESTAMP,
+                ZTRASHEDDATE        TIMESTAMP,
+                ZLASTEDITINGDEVICE  VARCHAR,
+                ZTEXT               VARCHAR,
+                ZTITLE              VARCHAR,
+                ZUNIQUEIDENTIFIER   VARCHAR,
+                ZVECTORCLOCK        BLOB
+            );
+        '''
 
         cursor = self._db.cursor()
         cursor.execute("SELECT * FROM ZSFNOTE")
 
         for note in cursor.fetchall():
             yield self._row_to_note(note)
-            
+
     def _row_to_note(self, row):
         return Note(
             bear = self,
@@ -181,14 +221,21 @@ class Bear(object):
         )
 
     def tags(self):
-        """
-        CREATE TABLE ZSFNOTETAG ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZMODIFICATIONDATE 
-        TIMESTAMP, ZTITLE VARCHAR );
-        """
+        '''
+        .. code-block:: sql
+
+            CREATE TABLE ZSFNOTETAG (
+                Z_PK                INTEGER PRIMARY KEY,
+                Z_ENT               INTEGER,
+                Z_OPT               INTEGER,
+                ZMODIFICATIONDATE   TIMESTAMP,
+                ZTITLE              VARCHAR
+            );
+        '''
 
         cursor = self._db.cursor()
         cursor.execute("SELECT * FROM ZSFNOTETAG")
-        
+
         for tag in cursor.fetchall():
             yield self._row_to_tag(tag)
 
@@ -201,7 +248,7 @@ class Bear(object):
 
     def tag_by_title(self, title):
         cursor = self._db.cursor()
-        cursor.execute("SELECT * FROM ZSFNOTETAG WHERE ZTITLE=?", [title])
+        cursor.execute('SELECT * FROM ZSFNOTETAG WHERE ZTITLE = ?', [title])
 
         tag = cursor.fetchone()
         if not tag:
