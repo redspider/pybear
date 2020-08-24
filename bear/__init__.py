@@ -180,6 +180,15 @@ class Bear(object):
             text = row['ZTEXT']
         )
 
+    def get_note(self, id):
+        cursor = self._db.cursor()
+        cursor.execute(
+            'SELECT * FROM ZFSNOTE WHERE ZUNIQUEIDENTIFIER = ?', [id])
+        row = cursor.fetchone()
+        if not row:
+            return None
+        return self._row_to_note(row)
+
     def tags(self):
         """
         CREATE TABLE ZSFNOTETAG ( Z_PK INTEGER PRIMARY KEY, Z_ENT INTEGER, Z_OPT INTEGER, ZMODIFICATIONDATE 
