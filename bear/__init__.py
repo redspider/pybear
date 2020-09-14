@@ -26,7 +26,7 @@ import re
 import sqlite3
 import datetime
 
-__version__ = '0.0.20200629'
+__version__ = '0.0.20200914'
 
 def timestamp_to_datetime(s):
     '''
