@@ -246,7 +246,7 @@ class Bear(object):
     def get_note(self, id):
         cursor = self._db.cursor()
         cursor.execute(
-            'SELECT * FROM ZFSNOTE WHERE ZUNIQUEIDENTIFIER = ?', [id])
+            'SELECT * FROM ZSFNOTE WHERE ZUNIQUEIDENTIFIER = ?', [id])
         row = cursor.fetchone()
         if not row:
             return None
