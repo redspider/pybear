@@ -173,17 +173,18 @@ class Note(object):
 
 
 class Bear(object):
-    def __init__(self, path=None):
+    def __init__(self, path=None, *, connect=True):
         if path:
             self._path = path
         else:
             self._path = os.path.expanduser(
                 '~//Library/Containers/net.shinyfrog.bear/Data/Library'
                 '/Application Support/net.shinyfrog.bear/database.sqlite')
-        self.connect()
+        if connect:
+            self.connect()
 
-    def connect(self):
-        self._db = sqlite3.connect(self._path)
+    def connect(self, **kwds):
+        self._db = sqlite3.connect(self._path, **kwds)
         self._db.row_factory = sqlite3.Row
 
     def notes(self):
