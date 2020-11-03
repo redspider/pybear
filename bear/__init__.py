@@ -26,7 +26,7 @@ import re
 import sqlite3
 import datetime
 
-__version__ = '0.0.20200629'
+__version__ = '0.0.20200914'
 
 def timestamp_to_datetime(s):
     '''
@@ -247,7 +247,7 @@ class Bear(object):
     def get_note(self, id):
         cursor = self._db.cursor()
         cursor.execute(
-            'SELECT * FROM ZFSNOTE WHERE ZUNIQUEIDENTIFIER = ?', [id])
+            'SELECT * FROM ZSFNOTE WHERE ZUNIQUEIDENTIFIER = ?', [id])
         row = cursor.fetchone()
         if not row:
             return None
