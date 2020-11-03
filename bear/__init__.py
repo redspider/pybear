@@ -178,8 +178,8 @@ class Bear(object):
             self._path = path
         else:
             self._path = os.path.expanduser(
-                '~//Library/Containers/net.shinyfrog.bear/Data/Library'
-                '/Application Support/net.shinyfrog.bear/database.sqlite')
+                '~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear'
+                '/Application Data/database.sqlite')
         if connect:
             self.connect()
 
